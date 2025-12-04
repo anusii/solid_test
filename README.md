@@ -4,6 +4,8 @@ Generic integration test utilities for Solid POD Flutter applications.
 
 This package provides OAuth automation, credential injection, and widget test helpers for testing apps that use Solid POD authentication.
 
+> **Security Notice**: Only use **dedicated test accounts** with this package. Never use production credentials or accounts containing sensitive data. Test credentials are stored locally and transmitted during automated browser login.
+
 ## Features
 
 - **Automated POD authentication** - Puppeteer-based OAuth flow automation
@@ -33,7 +35,7 @@ dart run solid_test:setup
 This interactive wizard will:
 1. Create `integration_test/fixtures/` directory
 2. Create `.gitignore` for credential files
-3. Prompt for your POD credentials
+3. Prompt for your POD **test** credentials
 4. Write `test_credentials.json`
 5. Optionally run browser automation to generate auth tokens
 
