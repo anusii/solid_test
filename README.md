@@ -24,50 +24,20 @@ dev_dependencies:
       ref: main
 ```
 
-### 2. Create fixtures directory
+### 2. Run the setup wizard
 
 ```bash
-mkdir -p integration_test/fixtures
+dart run solid_test:setup
 ```
 
-### 3. Create test credentials file
+This interactive wizard will:
+1. Create `integration_test/fixtures/` directory
+2. Create `.gitignore` for credential files
+3. Prompt for your POD credentials
+4. Write `test_credentials.json`
+5. Optionally run browser automation to generate auth tokens
 
-Create `integration_test/fixtures/test_credentials.json`:
-
-```json
-{
-  "email": "your-email@example.com",
-  "password": "your-password",
-  "securityKey": "your-security-key",
-  "webId": "https://pods.dev.solidcommunity.au/your-pod/profile/card#me",
-  "podUrl": "https://pods.dev.solidcommunity.au/your-pod/",
-  "issuer": "https://pods.dev.solidcommunity.au"
-}
-```
-
-### 4. Add `.gitignore` for fixtures
-
-Create `integration_test/fixtures/.gitignore`:
-
-```
-test_credentials.json
-complete_auth_data.json
-```
-
-### 5. Generate auth data
-
-```bash
-dart run solid_test:generate_auth
-```
-
-This will:
-1. Launch a browser
-2. Automate the POD login flow
-3. Capture OAuth tokens
-4. Generate RSA keys for DPoP
-5. Save complete auth data to `integration_test/fixtures/complete_auth_data.json`
-
-### 6. Write your tests
+### 3. Write your tests
 
 ```dart
 import 'package:flutter_test/flutter_test.dart';
@@ -101,11 +71,48 @@ void main() {
 }
 ```
 
-### 7. Run your tests
+### 4. Run your tests
 
 ```bash
 flutter test integration_test/ -d linux
 ```
+
+## Manual Setup (Alternative)
+
+If you prefer to set up manually instead of using the wizard:
+
+<details>
+<summary>Click to expand manual setup steps</summary>
+
+1. Create fixtures directory:
+   ```bash
+   mkdir -p integration_test/fixtures
+   ```
+
+2. Create `integration_test/fixtures/test_credentials.json`:
+   ```json
+   {
+     "email": "your-email@example.com",
+     "password": "your-password",
+     "securityKey": "your-security-key",
+     "webId": "https://pods.dev.solidcommunity.au/your-pod/profile/card#me",
+     "podUrl": "https://pods.dev.solidcommunity.au/your-pod/",
+     "issuer": "https://pods.dev.solidcommunity.au"
+   }
+   ```
+
+3. Create `integration_test/fixtures/.gitignore`:
+   ```
+   test_credentials.json
+   complete_auth_data.json
+   ```
+
+4. Generate auth data:
+   ```bash
+   dart run solid_test:generate_auth
+   ```
+
+</details>
 
 ## Configuration
 
