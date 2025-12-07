@@ -1,14 +1,14 @@
-/// Browser automation helper functions for POD authentication.
-///
-/// This module provides browser interaction utilities including:
-/// - Handling OAuth consent screens
-/// - Security key input handling
-///
-/// Copyright (C) 2025, Software Innovation Institute, ANU.
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License").
-///
-/// License: https://opensource.org/license/gpl-3-0.
+// Browser automation helper functions for POD authentication.
+//
+// This module provides browser interaction utilities including:
+// - Handling OAuth consent screens
+// - Security key input handling
+//
+// Copyright (C) 2025, Software Innovation Institute, ANU.
+//
+// Licensed under the GNU General Public License, Version 3 (the "Licence").
+//
+// Licence: https://opensource.org/license/gpl-3-0.
 
 // ignore_for_file: avoid_print
 
@@ -20,16 +20,20 @@ import 'package:puppeteer/puppeteer.dart';
 ///
 /// Attempts to find and click the consent approval button.
 /// Returns true if a consent button was found and clicked, false otherwise.
+
 Future<bool> handleConsentScreen(Page page) async {
   try {
     // Wait a moment for the consent screen to render.
+
     await Future.delayed(const Duration(seconds: 2));
 
     print('Looking for consent buttons...');
 
     // Try to find and click the "Yes" button.
+
     try {
       // Look for button with text "Yes" (case-insensitive).
+
       final buttons = await page.$$('button');
       print('Found ${buttons.length} buttons on page');
 
@@ -54,6 +58,7 @@ Future<bool> handleConsentScreen(Page page) async {
     }
 
     // Alternative: try looking for input type=submit with "Yes" value.
+    
     try {
       final submitInputs = await page.$$('input[type="submit"]');
       for (final input in submitInputs) {
@@ -73,6 +78,7 @@ Future<bool> handleConsentScreen(Page page) async {
     }
 
     // Last resort: try the first submit button.
+
     try {
       final submitButtons = await page.$$('button[type="submit"]');
       if (submitButtons.isNotEmpty) {
@@ -96,6 +102,7 @@ Future<bool> handleConsentScreen(Page page) async {
 ///
 /// Looks for security key input fields and fills them with the provided key.
 /// Returns true if a security key field was found and filled, false otherwise.
+
 Future<bool> handleSecurityKey(Page page, String securityKey) async {
   try {
     // Look for security key input.
@@ -115,6 +122,7 @@ Future<bool> handleSecurityKey(Page page, String securityKey) async {
         await page.type(selector, securityKey);
 
         // Click submit button.
+
         await page.click('button[type="submit"]');
         return true;
       } catch (_) {

@@ -1,13 +1,13 @@
-/// Automated POD OAuth login using Puppeteer for E2E testing.
-///
-/// This script automates the Solid POD OAuth flow to obtain authentication
-/// tokens without manual user interaction.
-///
-/// Copyright (C) 2025, Software Innovation Institute, ANU.
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License").
-///
-/// License: https://opensource.org/license/gpl-3-0.
+// Automated POD OAuth login using Puppeteer for E2E testing.
+//
+// This script automates the Solid POD OAuth flow to obtain authentication
+// tokens without manual user interaction.
+//
+// Copyright (C) 2025, Software Innovation Institute, ANU.
+//
+// Licensed under the GNU General Public License, Version 3 (the "Licence").
+//
+// Licence: https://opensource.org/license/gpl-3-0.
 
 // ignore_for_file: avoid_print
 
@@ -16,38 +16,15 @@ library;
 import 'dart:convert';
 
 import 'package:puppeteer/puppeteer.dart';
-
-import '../config/pod_config.dart';
-import '../config/test_credentials.dart';
-import '../oauth/dpop.dart';
-import '../oauth/oauth_client.dart';
-import '../oauth/pkce.dart';
-import '../oauth/token_exchange.dart';
-import '../storage/auth_data_builder.dart';
-import 'browser_helpers.dart';
-
-/// Result of POD authentication automation.
-class AuthResult {
-  /// Whether authentication was successful.
-  final bool success;
-
-  /// OAuth tokens (access_token, refresh_token, id_token, etc.)
-  final Map<String, dynamic>? tokens;
-
-  /// Complete auth data structure for solidpod's AuthDataManager.
-  final Map<String, dynamic>? completeAuthData;
-
-  /// Error message if authentication failed.
-  final String? error;
-
-  /// Creates an auth result.
-  AuthResult({
-    required this.success,
-    this.tokens,
-    this.completeAuthData,
-    this.error,
-  });
-}
+import 'package:solid_test/src/automation/auth_result.dart';
+import 'package:solid_test/src/automation/browser_helpers.dart';
+import 'package:solid_test/src/config/pod_config.dart';
+import 'package:solid_test/src/config/test_credentials.dart';
+import 'package:solid_test/src/oauth/dpop.dart';
+import 'package:solid_test/src/oauth/oauth_client.dart';
+import 'package:solid_test/src/oauth/pkce.dart';
+import 'package:solid_test/src/oauth/token_exchange.dart';
+import 'package:solid_test/src/storage/auth_data_builder.dart';
 
 /// Automates Solid POD OAuth login flow using Puppeteer.
 class PodAuthAutomator {
@@ -62,6 +39,7 @@ class PodAuthAutomator {
   /// 6. Extract auth tokens from callback or browser storage
   ///
   /// Returns [AuthResult] with success status and tokens/error.
+  
   static Future<AuthResult> authenticate({
     required TestCredentials credentials,
     required PodConfig config,
@@ -70,6 +48,7 @@ class PodAuthAutomator {
     Browser? browser;
     try {
       // Launch browser.
+
       browser = await puppeteer.launch(
         headless: headless,
         args: [
@@ -82,9 +61,11 @@ class PodAuthAutomator {
       final page = await browser.newPage();
 
       // Set a reasonable viewport.
+
       await page.setViewport(const DeviceViewport(width: 1280, height: 720));
 
       // Set up OAuth callback interception early (before navigating).
+
       String? capturedCode;
       String? capturedState;
 
@@ -97,16 +78,19 @@ class PodAuthAutomator {
         final url = request.url;
 
         // Check if this is the callback to localhost.
+
         if (url.startsWith(config.redirectUriString)) {
           print('Intercepted OAuth callback:');
           print('  Full URL: $url');
 
           // Parse the URL to extract code or error.
+
           final uri = Uri.parse(url);
           capturedCode = uri.queryParameters['code'];
           capturedState = uri.queryParameters['state'];
 
           // Check for error in callback.
+
           if (uri.queryParameters.containsKey('error')) {
             print('  ERROR in callback:');
             print('    error: ${uri.queryParameters['error']}');
@@ -116,6 +100,7 @@ class PodAuthAutomator {
           }
 
           // Abort the request since we don't have a server listening.
+          
           try {
             await request.abort();
           } catch (e) {
@@ -132,6 +117,7 @@ class PodAuthAutomator {
       });
 
       // Perform dynamic client registration to get client_id.
+
       print('Registering OAuth client...');
       final clientId = await registerOAuthClient(page, config);
       if (clientId == null) {
@@ -143,10 +129,12 @@ class PodAuthAutomator {
       print('Client registered: $clientId');
 
       // Generate PKCE parameters.
+
       final pkce = PkcePair.generate();
       print('Generated PKCE challenge');
 
       // Construct OAuth authorization URL with PKCE.
+
       final authUrl = buildAuthorizationUrl(
         config,
         clientId: clientId,
@@ -162,15 +150,18 @@ class PodAuthAutomator {
       );
 
       // Wait for login form to appear.
+
       print('Waiting for login form...');
       try {
         // Wait for email input field.
+
         await page.waitForSelector(
           'input[type="text"], input[name="email"]',
           timeout: config.timeout,
         );
 
         // Add delay to let the login screen fully render (cosmetic).
+
         await Future.delayed(const Duration(seconds: 1));
       } catch (e) {
         return AuthResult(
@@ -180,6 +171,7 @@ class PodAuthAutomator {
       }
 
       // Fill in email.
+
       print('Entering email...');
       await page.type(
         'input[type="text"], input[name="email"]',
@@ -187,6 +179,7 @@ class PodAuthAutomator {
       );
 
       // Fill in password.
+
       print('Entering password...');
       await page.type(
         'input[type="password"], input[name="password"]',
@@ -194,6 +187,7 @@ class PodAuthAutomator {
       );
 
       // Click login button.
+
       print('Clicking login button...');
       try {
         // Wait for and click the "Log in" button.
@@ -206,15 +200,18 @@ class PodAuthAutomator {
       }
 
       // Wait for navigation after login.
+
       print('Waiting for navigation after login...');
       await page.waitForNavigation(timeout: config.timeout);
 
       // Add a small delay to let the page load.
+
       await Future.delayed(const Duration(seconds: 2));
 
       print('Current URL after login: ${page.url}');
 
       // Handle consent screen if present.
+
       print('Checking for consent screen...');
       if (page.url!.contains('/consent')) {
         print('Consent screen detected!');
@@ -232,6 +229,7 @@ class PodAuthAutomator {
       }
 
       // Handle security key input if present.
+
       print('Checking for security key prompt...');
       final hasSecurityKey =
           await handleSecurityKey(page, credentials.securityKey);
@@ -240,12 +238,14 @@ class PodAuthAutomator {
       }
 
       // Wait for OAuth callback (capturedCode will be set by the request listener).
+
       print('Waiting for OAuth callback...');
       final startTime = DateTime.now();
       while (capturedCode == null) {
         await Future.delayed(const Duration(milliseconds: 500));
 
         // Check timeout.
+
         if (DateTime.now().difference(startTime) > config.timeout) {
           return AuthResult(
             success: false,
@@ -257,6 +257,7 @@ class PodAuthAutomator {
       print('OAuth callback received!');
 
       // Validate authorization code.
+      
       final authorizationCode =
           capturedCode; // capturedCode is guaranteed non-null here
       if (authorizationCode == null || authorizationCode.isEmpty) {
@@ -269,12 +270,15 @@ class PodAuthAutomator {
       print('Authorization code: ${authorizationCode.substring(0, 20)}...');
 
       // Disable request interceptor.
+
       interceptorActive = false;
-      // Give it a moment to stop processing any pending requests
+      // Give it a moment to stop processing any pending requests.
+
       await Future.delayed(const Duration(milliseconds: 500));
       await page.setRequestInterception(false);
 
       // Exchange authorization code for OAuth tokens.
+
       print('Exchanging authorization code for tokens...');
       final tokenResponse = await exchangeCodeForTokens(
         page,
@@ -294,9 +298,11 @@ class PodAuthAutomator {
       print('Token exchange successful!');
 
       // Extract tokens from response.
+
       final oauthTokens = tokenResponse['tokens'] as Map<String, dynamic>;
 
       // Decode ID token to extract WebID.
+
       final idToken = oauthTokens['id_token'] as String?;
       String? webId;
       if (idToken != null) {
@@ -307,10 +313,12 @@ class PodAuthAutomator {
       }
 
       // Generate RSA keypair for DPoP token generation.
+
       print('\nGenerating complete auth data structure...');
       final rsaInfo = await generateRsaKeyPair();
 
       // Build Credential JSON structure (async - fetches issuer metadata).
+
       final credentialJson = await buildCredentialJson(
         oauthTokens: oauthTokens,
         clientId: clientId,
@@ -318,6 +326,7 @@ class PodAuthAutomator {
       );
 
       // Build complete auth data in AuthDataManager format.
+
       final completeAuthData = buildCompleteAuthData(
         webId: webId ?? 'unknown',
         logoutUrl: config.logoutUrl,
@@ -326,6 +335,7 @@ class PodAuthAutomator {
       );
 
       // Build legacy tokens map for backwards compatibility.
+
       final tokens = <String, dynamic>{
         'access_token': oauthTokens['access_token'],
         'refresh_token': oauthTokens['refresh_token'],
@@ -365,6 +375,7 @@ class PodAuthAutomator {
   }
 
   /// Pretty print tokens for debugging.
+  
   static String formatTokens(Map<String, dynamic> tokens) {
     const encoder = JsonEncoder.withIndent('  ');
     return encoder.convert(tokens);

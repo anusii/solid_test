@@ -1,12 +1,12 @@
-/// Credential injection for E2E testing with Solid POD authentication.
-///
-/// This allows E2E tests to run authenticated without manual login.
-///
-/// Copyright (C) 2025, Software Innovation Institute, ANU.
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License").
-///
-/// License: https://opensource.org/license/gpl-3-0.
+// Credential injection for E2E testing with Solid POD authentication.
+//
+// This allows E2E tests to run authenticated without manual login.
+//
+// Copyright (C) 2025, Software Innovation Institute, ANU.
+//
+// Licensed under the GNU General Public License, Version 3 (the "Licence").
+//
+// Licence: https://opensource.org/license/gpl-3-0.
 
 // ignore_for_file: avoid_print
 
@@ -16,15 +16,16 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
-import '../automation/pod_auth_automator.dart';
-import '../config/pod_config.dart';
-import '../config/test_credentials.dart';
+import 'package:solid_test/src/automation/pod_auth_automator.dart';
+import 'package:solid_test/src/config/pod_config.dart';
+import 'package:solid_test/src/config/test_credentials.dart';
 
 /// Storage key used by solidpod package to store complete auth data.
+
 const authDataSecureStorageKey = '_solid_auth_data';
 
 /// Injects test credentials for authenticated E2E testing.
+
 class CredentialInjector {
   /// Injects complete auth data directly into secure storage.
   ///
@@ -37,6 +38,7 @@ class CredentialInjector {
   ///
   /// This is stored under the '_solid_auth_data' key that solidpod's
   /// AuthDataManager expects.
+  
   static Future<void> injectCompleteAuthData(
     Map<String, dynamic> authData,
   ) async {
@@ -46,6 +48,7 @@ class CredentialInjector {
 
     // The auth data is already in the correct format from extraction.
     // We just need to serialize it and store it under the correct key.
+
     final authDataJson = jsonEncode(authData);
 
     await storage.write(
@@ -70,6 +73,7 @@ class CredentialInjector {
   ///
   /// If [autoRegenerateOnFailure] is true, will automatically regenerate tokens
   /// if they are expired or if the auth data file is missing.
+  
   static Future<void> injectFullAuth({
     PodConfig? config,
     bool autoRegenerateOnFailure = false,
@@ -82,10 +86,12 @@ class CredentialInjector {
 
     try {
       // Try loading complete auth data first.
+
       authData = await loadCompleteAuthData(podConfig.authDataPath);
       print('Complete auth data loaded');
 
       // Check if tokens are expired.
+
       if (_isTokenExpired(authData)) {
         print('Auth tokens have expired');
         if (autoRegenerateOnFailure) {
@@ -107,16 +113,19 @@ class CredentialInjector {
     }
 
     // Regenerate tokens if needed.
+
     if (needsRegeneration) {
       print('Auto-regenerating tokens with browser automation...');
       await _regenerateTokens(podConfig);
 
       // Load the freshly generated auth data.
+
       authData = await loadCompleteAuthData(podConfig.authDataPath);
       print('Complete auth data auto-regenerated and loaded');
     }
 
     // Inject the complete auth data structure.
+
     if (authData != null) {
       await injectCompleteAuthData(authData);
       print('Full authentication injected successfully');
@@ -126,6 +135,7 @@ class CredentialInjector {
   }
 
   /// Loads complete auth data from file.
+  
   static Future<Map<String, dynamic>> loadCompleteAuthData(String path) async {
     final file = File(path);
     if (!await file.exists()) {
@@ -142,6 +152,7 @@ class CredentialInjector {
   /// Checks if the auth token is expired.
   ///
   /// Returns true if the token has expired or will expire within the next minute.
+  
   static bool _isTokenExpired(Map<String, dynamic> authData) {
     try {
       final authResponse = authData['auth_response'] as Map<String, dynamic>?;
@@ -153,6 +164,7 @@ class CredentialInjector {
       DateTime? expiryTime;
 
       // Try CORRECT format: auth_response.token.expires_at
+
       final token = authResponse['token'] as Map<String, dynamic>?;
       if (token != null) {
         final expiresAt = token['expires_at'] as int?;
@@ -162,6 +174,7 @@ class CredentialInjector {
       }
 
       // Fallback for old broken format: auth_response.response.expires_in
+
       if (expiryTime == null) {
         final response = authResponse['response'] as Map<String, dynamic>?;
         if (response != null) {
@@ -186,6 +199,7 @@ class CredentialInjector {
       }
 
       // Check if token is expired or expires within the next minute.
+
       final now = DateTime.now();
       final bufferTime = now.add(const Duration(minutes: 1));
 
@@ -204,13 +218,16 @@ class CredentialInjector {
   }
 
   /// Automatically regenerates auth data using browser automation.
+  
   static Future<void> _regenerateTokens(PodConfig config) async {
     print('Regenerating auth data using browser automation...');
 
     // Load test credentials.
+
     final credentials = await TestCredentials.load(config.credentialsPath);
 
     // Perform automated browser login.
+    
     print('  Authenticating with POD provider...');
     final result = await PodAuthAutomator.authenticate(
       credentials: credentials,
@@ -225,6 +242,7 @@ class CredentialInjector {
     }
 
     // Save complete auth data to file.
+
     print('  Saving complete auth data to ${config.authDataPath}...');
     final completeAuthFile = File(config.authDataPath);
     await completeAuthFile.parent.create(recursive: true);
@@ -236,13 +254,16 @@ class CredentialInjector {
   }
 
   /// Clears injected credentials (for test cleanup).
+  
   static Future<void> clearCredentials() async {
     final storage = _createSecureStorage();
 
     // Clear complete auth data (solidpod package's storage key).
+
     await storage.delete(key: authDataSecureStorageKey);
 
     // Clear OAuth tokens (legacy).
+
     await storage.delete(key: 'webId');
     await storage.delete(key: 'accessToken');
     await storage.delete(key: 'idToken');
@@ -252,19 +273,23 @@ class CredentialInjector {
     await storage.delete(key: 'clientId');
 
     // Clear basic credentials.
+
     await storage.delete(key: 'podUrl');
     await storage.delete(key: 'issuer');
 
     // Clear OpenID Connect auth response.
+
     await storage.delete(key: 'openidconnect_auth_response_info');
 
     // Clear cookies.
+
     await storage.delete(key: 'cookies');
 
     print('Cleared all injected credentials and tokens');
   }
 
   /// Verifies that credentials are properly injected.
+  
   static Future<bool> verifyInjection() async {
     try {
       final storage = _createSecureStorage();
@@ -284,6 +309,7 @@ class CredentialInjector {
   }
 
   /// Creates a FlutterSecureStorage instance with platform-specific options.
+  
   static FlutterSecureStorage _createSecureStorage() {
     return const FlutterSecureStorage(
       aOptions: AndroidOptions(

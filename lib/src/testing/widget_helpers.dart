@@ -1,13 +1,13 @@
-/// Widget interaction helpers for integration tests.
-///
-/// Provides extension methods on WidgetTester for common UI interactions
-/// like tapping icons, entering text, and waiting for widgets.
-///
-/// Copyright (C) 2025, Software Innovation Institute, ANU.
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License").
-///
-/// License: https://opensource.org/license/gpl-3-0.
+// Widget interaction helpers for integration tests.
+//
+// Provides extension methods on WidgetTester for common UI interactions
+// like tapping icons, entering text, and waiting for widgets.
+//
+// Copyright (C) 2025, Software Innovation Institute, ANU.
+//
+// Licensed under the GNU General Public License, Version 3 (the "Licence").
+//
+// Licence: https://opensource.org/license/gpl-3-0.
 
 library;
 
@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// Extension methods for common widget interactions in tests.
+
 extension WidgetTestHelpers on WidgetTester {
   /// Find and tap an icon if it exists.
   ///
@@ -22,6 +23,7 @@ extension WidgetTestHelpers on WidgetTester {
   ///
   /// [icon] - The IconData to search for.
   /// [settleDuration] - Duration to wait after tapping (default 2 seconds).
+  
   Future<bool> tapIconIfExists(
     IconData icon, {
     Duration settleDuration = const Duration(seconds: 2),
@@ -41,6 +43,7 @@ extension WidgetTestHelpers on WidgetTester {
   ///
   /// [text] - The text to enter.
   /// [settleDuration] - Duration to wait after entering text (default 2 seconds).
+  
   Future<bool> enterTextInField(
     String text, {
     Duration settleDuration = const Duration(seconds: 2),
@@ -60,6 +63,7 @@ extension WidgetTestHelpers on WidgetTester {
   ///
   /// [text] - The text to search for.
   /// [settleDuration] - Duration to wait after tapping (default 2 seconds).
+  
   Future<bool> tapByText(
     String text, {
     Duration settleDuration = const Duration(seconds: 2),
@@ -80,6 +84,7 @@ extension WidgetTestHelpers on WidgetTester {
   /// [finder] - The Finder to search for.
   /// [timeout] - Maximum time to wait (default 10 seconds).
   /// [checkInterval] - Time between checks (default 500ms).
+  
   Future<bool> waitForWidget(
     Finder finder, {
     Duration timeout = const Duration(seconds: 10),
@@ -103,6 +108,7 @@ extension WidgetTestHelpers on WidgetTester {
   ///
   /// [buttonText] - The text of the button to tap.
   /// [settleDuration] - Duration to wait after tapping (default 2 seconds).
+  
   Future<bool> dismissDialogByText(
     String buttonText, {
     Duration settleDuration = const Duration(seconds: 2),
@@ -113,6 +119,7 @@ extension WidgetTestHelpers on WidgetTester {
   /// Tap the first button of a given type.
   ///
   /// Returns true if a button was found and tapped, false otherwise.
+  
   Future<bool> tapFirstButton<T extends Widget>({
     Duration settleDuration = const Duration(seconds: 2),
   }) async {
@@ -128,6 +135,7 @@ extension WidgetTestHelpers on WidgetTester {
   /// Scroll until a widget is visible.
   ///
   /// Returns true if the widget was found after scrolling.
+  
   Future<bool> scrollUntilVisible(
     Finder finder, {
     Finder? scrollable,

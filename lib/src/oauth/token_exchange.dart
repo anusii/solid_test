@@ -1,10 +1,10 @@
-/// OAuth token exchange utilities.
-///
-/// Copyright (C) 2025, Software Innovation Institute, ANU.
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License").
-///
-/// License: https://opensource.org/license/gpl-3-0.
+// OAuth token exchange utilities.
+//
+// Copyright (C) 2025, Software Innovation Institute, ANU.
+//
+// Licensed under the GNU General Public License, Version 3 (the "Licence").
+//
+// Licence: https://opensource.org/license/gpl-3-0.
 
 // ignore_for_file: avoid_print
 
@@ -13,12 +13,12 @@ library;
 import 'dart:convert';
 
 import 'package:puppeteer/puppeteer.dart';
-
-import '../config/pod_config.dart';
+import 'package:solid_test/src/config/pod_config.dart';
 
 /// Exchanges authorization code for OAuth tokens.
 ///
 /// Returns a map with success status and tokens/error.
+
 Future<Map<String, dynamic>> exchangeCodeForTokens(
   Page page,
   PodConfig config, {
@@ -28,6 +28,7 @@ Future<Map<String, dynamic>> exchangeCodeForTokens(
 }) async {
   try {
     // Prepare token request body.
+
     final tokenRequest = {
       'grant_type': 'authorization_code',
       'code': authorizationCode,
@@ -37,6 +38,7 @@ Future<Map<String, dynamic>> exchangeCodeForTokens(
     };
 
     // Use fetch API to exchange code for tokens.
+
     final result = await page.evaluate(
       '''
         async (endpoint, data) => {
@@ -96,9 +98,11 @@ Future<Map<String, dynamic>> exchangeCodeForTokens(
 ///
 /// ID tokens are JWTs with 3 parts: header.payload.signature
 /// The payload contains the webid claim (or sub claim as fallback).
+
 String? extractWebIdFromIdToken(String idToken) {
   try {
     // Split JWT into parts.
+
     final parts = idToken.split('.');
     if (parts.length != 3) {
       print('Invalid ID token format');
@@ -106,19 +110,23 @@ String? extractWebIdFromIdToken(String idToken) {
     }
 
     // Decode payload (base64url).
+
     final payload = parts[1];
 
     // Add padding if needed for base64 decoding.
+
     var normalized = payload.replaceAll('-', '+').replaceAll('_', '/');
     while (normalized.length % 4 != 0) {
       normalized += '=';
     }
 
     // Decode base64.
+
     final decoded = utf8.decode(base64.decode(normalized));
     final json = jsonDecode(decoded) as Map<String, dynamic>;
 
     // Extract webid claim (or sub as fallback).
+    
     final webId = json['webid'] as String? ?? json['sub'] as String?;
     return webId;
   } catch (e) {

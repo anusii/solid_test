@@ -1,10 +1,10 @@
-/// Auth data builder for solidpod's AuthDataManager format.
-///
-/// Copyright (C) 2025, Software Innovation Institute, ANU.
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License").
-///
-/// License: https://opensource.org/license/gpl-3-0.
+// Auth data builder for solidpod's AuthDataManager format.
+//
+// Copyright (C) 2025, Software Innovation Institute, ANU.
+//
+// Licensed under the GNU General Public License, Version 3 (the "Licence").
+//
+// Licence: https://opensource.org/license/gpl-3-0.
 
 // ignore_for_file: avoid_print
 
@@ -13,13 +13,13 @@ library;
 import 'dart:convert';
 
 import 'package:pointycastle/export.dart';
-
-import '../oauth/dpop.dart';
+import 'package:solid_test/src/oauth/dpop.dart';
 
 /// Builds a Credential-compatible JSON structure from OAuth tokens.
 ///
 /// This creates the EXACT structure that solidpod's AuthDataManager expects.
 /// Format must match what manual extraction creates.
+
 Future<Map<String, dynamic>> buildCredentialJson({
   required Map<String, dynamic> oauthTokens,
   required String clientId,
@@ -28,16 +28,19 @@ Future<Map<String, dynamic>> buildCredentialJson({
   print('Building Credential JSON structure...');
 
   // Calculate expires_at timestamp (Unix timestamp in seconds)
+
   final expiresIn = (oauthTokens['expires_in'] as int?) ?? 3600;
   final now = DateTime.now();
   final expiresAt = now.add(Duration(seconds: expiresIn));
   final expiresAtUnix = (expiresAt.millisecondsSinceEpoch / 1000).round();
 
   // Fetch issuer metadata from well-known endpoint
+
   print('  Fetching issuer metadata...');
   final issuerMetadata = _buildIssuerMetadata(issuerUrl);
 
   // Build the credential JSON in the format solidpod expects
+
   final credentialJson = {
     'issuer': issuerMetadata,
     'client_id': clientId,
@@ -66,6 +69,7 @@ Future<Map<String, dynamic>> buildCredentialJson({
 ///
 /// This should ideally be fetched from ${issuerUrl}/.well-known/openid-configuration
 /// but for now returns a static structure that matches the format.
+
 Map<String, dynamic> _buildIssuerMetadata(String issuerUrl) {
   return {
     'authorization_endpoint': '$issuerUrl/.oidc/auth',
@@ -129,6 +133,7 @@ Map<String, dynamic> _buildIssuerMetadata(String issuerUrl) {
 ///
 /// This creates the exact format that AuthDataManager stores in secure storage
 /// under the '_solid_auth_data' key.
+
 Map<String, dynamic> buildCompleteAuthData({
   required String webId,
   required String logoutUrl,
@@ -146,6 +151,7 @@ Map<String, dynamic> buildCompleteAuthData({
   // }
 
   // Extract RSA keypair and serialize it.
+  
   final keyPair = rsaInfo['rsa'] as AsymmetricKeyPair;
   final publicKey = keyPair.publicKey as RSAPublicKey;
   final privateKey = keyPair.privateKey as RSAPrivateKey;

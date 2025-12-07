@@ -1,10 +1,10 @@
-/// Test credentials model for POD authentication.
-///
-/// Copyright (C) 2025, Software Innovation Institute, ANU.
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License").
-///
-/// License: https://opensource.org/license/gpl-3-0.
+// Test credentials model for POD authentication.
+//
+// Copyright (C) 2025, Software Innovation Institute, ANU.
+//
+// Licensed under the GNU General Public License, Version 3 (the "Licence").
+//
+// Licence: https://opensource.org/license/gpl-3-0.
 
 library;
 
@@ -31,26 +31,34 @@ import 'dart:io';
 ///   "issuer": "https://pods.dev.solidcommunity.au"
 /// }
 /// ```
+
 class TestCredentials {
   /// Email address for login.
+  
   final String email;
 
   /// Password for login.
+  
   final String password;
 
   /// Security key (encryption key) for POD.
+  
   final String securityKey;
 
   /// WebID of the test user.
+  
   final String webId;
 
   /// Base URL of the user's POD.
+  
   final String podUrl;
 
   /// Issuer URL of the POD provider.
+  
   final String issuer;
 
   /// Creates test credentials.
+  
   const TestCredentials({
     required this.email,
     required this.password,
@@ -61,6 +69,7 @@ class TestCredentials {
   });
 
   /// Creates test credentials from JSON.
+  
   factory TestCredentials.fromJson(Map<String, dynamic> json) {
     return TestCredentials(
       email: json['email'] as String,
@@ -75,6 +84,7 @@ class TestCredentials {
   /// Loads test credentials from a JSON file.
   ///
   /// Throws [Exception] if the file cannot be loaded or parsed.
+  
   static Future<TestCredentials> load(String path) async {
     final file = File(path);
     if (!await file.exists()) {
@@ -95,6 +105,7 @@ class TestCredentials {
   }
 
   /// Converts to JSON map.
+  
   Map<String, dynamic> toJson() {
     return {
       'email': email,

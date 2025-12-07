@@ -226,6 +226,15 @@ await tester.pumpAndSettle(hack);
   sudo apt-get install libsecret-1-dev
   ```
 
+## Documentation
+
+See the [docs/](docs/) folder for detailed guides:
+
+- [Concepts](docs/concepts.md) - OAuth, DPoP, PKCE basics
+- [Testing Patterns](docs/testing-patterns.md) - Writing tests with solid_test
+- [Troubleshooting](docs/troubleshooting.md) - Common errors and fixes
+- [CI/CD](docs/ci-cd.md) - Continuous integration setup
+
 ## License
 
 GNU General Public License, Version 3 (GPL-3.0)

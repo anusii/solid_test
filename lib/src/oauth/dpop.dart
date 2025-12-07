@@ -1,12 +1,12 @@
-/// DPoP (Demonstrating Proof of Possession) utilities.
-///
-/// Generates RSA keypairs for DPoP token signing.
-///
-/// Copyright (C) 2025, Software Innovation Institute, ANU.
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License").
-///
-/// License: https://opensource.org/license/gpl-3-0.
+// DPoP (Demonstrating Proof of Possession) utilities.
+//
+// Generates RSA keypairs for DPoP token signing.
+//
+// Copyright (C) 2025, Software Innovation Institute, ANU.
+//
+// Licensed under the GNU General Public License, Version 3 (the "Licence").
+//
+// Licence: https://opensource.org/license/gpl-3-0.
 
 library;
 
@@ -23,8 +23,10 @@ import 'package:pointycastle/export.dart';
 /// - 'rsa': AsymmetricKeyPair object (from pointycastle)
 /// - 'pubKeyJwk': Public key in JWK format
 /// - 'prvKeyJwk': Private key in JWK format
+
 Future<Map<String, dynamic>> generateRsaKeyPair() async {
   // Generate 2048-bit RSA keypair using pointycastle.
+
   final keyGen = RSAKeyGenerator()
     ..init(
       ParametersWithRandom(
@@ -38,10 +40,12 @@ Future<Map<String, dynamic>> generateRsaKeyPair() async {
   final privateKey = keyPair.privateKey;
 
   // Convert to JWK format.
+
   final publicKeyJwk = _rsaPublicKeyToJwk(publicKey);
   final privateKeyJwk = _rsaPrivateKeyToJwk(privateKey);
 
   // Add algorithm.
+
   publicKeyJwk['alg'] = 'RS256';
   privateKeyJwk['alg'] = 'RS256';
 
@@ -53,6 +57,7 @@ Future<Map<String, dynamic>> generateRsaKeyPair() async {
 }
 
 /// Generates random bytes for seeding the random number generator.
+
 Uint8List _generateRandomBytes(int length) {
   final random = Random.secure();
   final bytes = Uint8List(length);
@@ -63,6 +68,7 @@ Uint8List _generateRandomBytes(int length) {
 }
 
 /// Converts an RSA public key to JWK format.
+
 Map<String, dynamic> _rsaPublicKeyToJwk(RSAPublicKey publicKey) {
   return {
     'kty': 'RSA',
@@ -72,6 +78,7 @@ Map<String, dynamic> _rsaPublicKeyToJwk(RSAPublicKey publicKey) {
 }
 
 /// Converts an RSA private key to JWK format.
+
 Map<String, dynamic> _rsaPrivateKeyToJwk(RSAPrivateKey privateKey) {
   return {
     'kty': 'RSA',
@@ -84,12 +91,14 @@ Map<String, dynamic> _rsaPrivateKeyToJwk(RSAPrivateKey privateKey) {
 }
 
 /// Encodes a BigInt to base64url format for JWK.
+
 String _base64UrlEncode(BigInt value) {
   final bytes = _bigIntToBytes(value);
   return base64UrlEncode(bytes).replaceAll('=', '');
 }
 
 /// Converts a BigInt to bytes.
+
 Uint8List _bigIntToBytes(BigInt value) {
   final hex = value.toRadixString(16);
   final paddedHex = hex.length.isOdd ? '0$hex' : hex;
@@ -101,9 +110,11 @@ Uint8List _bigIntToBytes(BigInt value) {
 }
 
 /// Serializes an RSA public key to PEM format.
+
 String serializePublicKey(RSAPublicKey publicKey) {
   final algorithmSeq = ASN1Sequence();
   // OID for rsaEncryption: 1.2.840.113549.1.1.1
+
   algorithmSeq.add(ASN1ObjectIdentifier([1, 2, 840, 113549, 1, 1, 1]));
   algorithmSeq.add(ASN1Null());
 
@@ -128,6 +139,7 @@ String serializePublicKey(RSAPublicKey publicKey) {
 }
 
 /// Serializes an RSA private key to PEM format.
+
 String serializePrivateKey(RSAPrivateKey privateKey) {
   final version = ASN1Integer(BigInt.zero);
   final modulus = ASN1Integer(privateKey.modulus!);

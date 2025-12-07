@@ -1,10 +1,10 @@
-/// Constant delays for integration testing.
-///
-/// Copyright (C) 2025, Software Innovation Institute, ANU.
-///
-/// Licensed under the GNU General Public License, Version 3 (the "License").
-///
-/// License: https://opensource.org/license/gpl-3-0.
+// Constant delays for integration testing.
+//
+// Copyright (C) 2025, Software Innovation Institute, ANU.
+//
+// Licensed under the GNU General Public License, Version 3 (the "Licence").
+//
+// Licence: https://opensource.org/license/gpl-3-0.
 
 library;
 
@@ -31,11 +31,13 @@ const String envINTERACT = String.fromEnvironment(
 );
 
 /// Interactive delay duration parsed from INTERACT environment variable.
+
 final Duration interact = Duration(seconds: int.parse(envINTERACT));
 
 /// Default delay duration (2 seconds).
 ///
 /// Use this where a delay is always useful and 2 seconds is sufficient.
+
 const Duration delay = Duration(seconds: 2);
 
 /// Hack delay for operations that need more time (10 seconds).
@@ -43,9 +45,11 @@ const Duration delay = Duration(seconds: 2);
 /// Use when you need to wait for async operations that take longer.
 /// By naming the delay as a "hack" we mark it as a delay that we want
 /// to come back and fix eventually.
+
 const Duration hack = Duration(seconds: 10);
 
 /// Long hack delay for very slow operations (25 seconds).
 ///
 /// Use sparingly and prefer multiple [hack] delays when possible.
+
 const Duration longHack = Duration(seconds: 25);
