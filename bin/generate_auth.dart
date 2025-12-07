@@ -17,7 +17,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:solid_test/solid_test.dart';
+import 'package:solid_test/solid_test_cli.dart';
 
 void main(List<String> args) async {
   print('=== Solid POD Auth Data Generator ===\n');
